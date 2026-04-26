@@ -1,9 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, Globe, GraduationCap, Heart, Home, Share2, Star } from "lucide-react";
+import {
+  CalendarDays,
+  Globe,
+  GraduationCap,
+  Heart,
+  Home,
+  Share2,
+  Star
+} from "lucide-react";
 
-import { getDoctor, getDoctorSlots } from "@/lib/services/catalog";
-import { cn } from "@/lib/utils";
+import { getDoctor } from "@/lib/services/catalog";
+import { cn, generateTimeSlots } from "@/lib/utils";
+import DoctorDateChoice from "@/components/doctor/doctor-date-choice";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -20,6 +29,10 @@ export async function generateMetadata({
     title: doctor ? `${doctor.name} - Slot Booking` : "Doctor Profile",
     description: doctor?.bio ?? "Doctor profile and slot booking page."
   };
+}
+export interface DateChoice {
+  label: string;
+  day: string;
 }
 
 const dateChoices = [
@@ -40,25 +53,36 @@ export default async function DoctorProfilePage({
 }) {
   const { slug } = await params;
   const currentSearch = await searchParams;
+  const today = new Date();
+  const todaysString = today.toISOString().split("T")[0];
+
   const selectedDate =
-    typeof currentSearch.date === "string" ? currentSearch.date : "2026-04-28";
+    typeof currentSearch.date === "string" ? currentSearch.date : todaysString;
   const doctor = await getDoctor(slug);
 
   if (!doctor) {
-    return <main className="mx-auto max-w-5xl px-6 py-20">Doctor not found.</main>;
+    return (
+      <main className="mx-auto max-w-5xl px-6 py-20">Doctor not found.</main>
+    );
   }
 
-  const slots = await getDoctorSlots(slug, selectedDate);
+  const slots = generateTimeSlots(doctor, selectedDate);
 
   return (
     <main className="mx-auto flex max-w-[1100px] flex-col px-4 py-8 sm:px-10">
       <div className="flex flex-wrap gap-2 py-2 text-sm">
-        <Link className="flex items-center gap-1 font-medium text-[var(--primary)]" href="/">
+        <Link
+          className="flex items-center gap-1 font-medium text-[var(--primary)]"
+          href="/"
+        >
           <Home className="size-4" />
           Home
         </Link>
         <span className="text-slate-400">/</span>
-        <Link className="font-medium text-[var(--primary)]" href={`/doctors?specialty=${doctor.specialty}`}>
+        <Link
+          className="font-medium text-[var(--primary)]"
+          href={`/doctors?specialty=${doctor.specialty}`}
+        >
           {doctor.specialty}
         </Link>
         <span className="text-slate-400">/</span>
@@ -103,20 +127,26 @@ export default async function DoctorProfilePage({
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-2xl font-bold text-slate-900">{doctor.patientsTreated}+</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {doctor.patientsTreated}+
+                </p>
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
                   Patients Treated
                 </p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-2xl font-bold text-slate-900">{doctor.yearsExperience}</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {doctor.yearsExperience}
+                </p>
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
                   Years Experience
                 </p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center gap-1">
-                  <p className="text-2xl font-bold text-slate-900">{doctor.rating}</p>
+                  <p className="text-2xl font-bold text-slate-900">
+                    {doctor.rating}
+                  </p>
                   <Star className="size-4 fill-yellow-400 text-yellow-400" />
                 </div>
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
@@ -131,7 +161,9 @@ export default async function DoctorProfilePage({
           <h2 className="border-t border-slate-100 pt-6 text-lg font-bold text-slate-900">
             Professional Bio
           </h2>
-          <p className="mt-3 max-w-4xl leading-8 text-slate-500">{doctor.bio}</p>
+          <p className="mt-3 max-w-4xl leading-8 text-slate-500">
+            {doctor.bio}
+          </p>
         </div>
       </section>
 
@@ -142,30 +174,17 @@ export default async function DoctorProfilePage({
               <CalendarDays className="size-5 text-[var(--primary)]" />
               Appointment Scheduling
             </h2>
-            <span className="text-sm font-medium text-slate-500">October 2026</span>
+            <span className="text-sm font-medium text-slate-500">
+              October 2026
+            </span>
           </div>
-
-          <div className="flex gap-3 overflow-x-auto pb-4">
-            {dateChoices.map((choice) => (
-              <Link
-                key={choice.day}
-                className={cn(
-                  "flex h-20 min-w-[70px] flex-col items-center justify-center rounded-xl border text-center",
-                  choice.active
-                    ? "border-[var(--primary)] bg-sky-50 text-[var(--primary)]"
-                    : "border-slate-200 bg-white text-slate-700"
-                )}
-                href={`?date=${selectedDate}`}
-              >
-                <span className="text-xs font-bold uppercase">{choice.label}</span>
-                <span className="text-lg font-bold">{choice.day}</span>
-              </Link>
-            ))}
-          </div>
+          <DoctorDateChoice date={selectedDate} />
 
           <div className="mt-8">
             <div className="mb-4 flex flex-col justify-between gap-3 md:flex-row md:items-center">
-              <h3 className="font-bold text-slate-900">Available Time Slots (10-min intervals)</h3>
+              <h3 className="font-bold text-slate-900">
+                Available Time Slots (10-min intervals)
+              </h3>
               <div className="flex gap-4 text-xs">
                 <span className="flex items-center gap-1.5">
                   <span className="size-3 rounded-full bg-emerald-500" />
@@ -181,7 +200,9 @@ export default async function DoctorProfilePage({
                 </span>
               </div>
             </div>
-            <p className="mb-4 text-sm text-slate-500">Evening Shift: 6:00 PM - 10:00 PM</p>
+            <p className="mb-4 text-sm text-slate-500">
+              Evening Shift: 6:00 PM - 10:00 PM
+            </p>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
               {slots.map((slot) => (
                 <Link
@@ -215,11 +236,15 @@ export default async function DoctorProfilePage({
             </div>
             <div className="flex justify-between">
               <span>Consultation Fee</span>
-              <span className="font-semibold text-slate-900">${doctor.consultationFee}</span>
+              <span className="font-semibold text-slate-900">
+                ${doctor.consultationFee}
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Branch</span>
-              <span className="text-right font-semibold text-slate-900">{doctor.branch}</span>
+              <span className="text-right font-semibold text-slate-900">
+                {doctor.branch}
+              </span>
             </div>
           </div>
           <Link

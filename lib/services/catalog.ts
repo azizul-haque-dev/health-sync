@@ -1,14 +1,18 @@
 import { unstable_cache } from "next/cache";
 
-import { branches, doctorSlots, doctors, specialties } from "@/lib/demo-data";
+import { branches, doctors, specialties } from "@/lib/demo-data";
 
 export const getBranches = unstable_cache(async () => branches, ["branches"], {
   tags: ["branches"]
 });
 
-export const getSpecialties = unstable_cache(async () => specialties, ["specialties"], {
-  tags: ["specialties"]
-});
+export const getSpecialties = unstable_cache(
+  async () => specialties,
+  ["specialties"],
+  {
+    tags: ["specialties"]
+  }
+);
 
 export const getFeaturedDoctors = unstable_cache(
   async () => doctors.filter((doctor) => doctor.featured),
@@ -51,8 +55,8 @@ export async function getDoctor(slug: string) {
   return doctors.find((doctor) => doctor.slug === slug) ?? null;
 }
 
-export async function getDoctorSlots(slug: string, date?: string) {
-  return doctorSlots.filter(
-    (slot) => slot.doctorSlug === slug && (!date || slot.date === date)
-  );
-}
+// export async function getDoctorSlots(slug: string, date?: string) {
+//   return doctorSlots.filter(
+//     (slot) => slot.doctorSlug === slug && (!date || slot.date === date)
+//   );
+// }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { nav } from "../../lib/staticData";
 
-function DesktopMenu() {
+async function DesktopMenu() {
   return (
     <nav className="hidden items-center gap-8 md:flex">
       {nav.map((item) => (

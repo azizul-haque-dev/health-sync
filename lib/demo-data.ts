@@ -1,3 +1,5 @@
+import { getDoctor } from "./services/catalog";
+
 export type Branch = {
   slug: string;
   name: string;
@@ -21,6 +23,9 @@ export type Doctor = {
   branch: string;
   branchSlug: string;
   bio: string;
+  avilabilityFrom: string;
+  avilabilityTo: string;
+  timeInterval: number;
   education: string;
   languages: string[];
   yearsExperience: number;
@@ -68,7 +73,8 @@ export const specialties: Specialty[] = [
   {
     slug: "cardiology",
     name: "Cardiology",
-    description: "Preventive cardiology, diagnostics, and long-term heart health."
+    description:
+      "Preventive cardiology, diagnostics, and long-term heart health."
   },
   {
     slug: "pediatrics",
@@ -101,6 +107,9 @@ export const doctors: Doctor[] = [
     languages: ["English", "Spanish", "French"],
     yearsExperience: 15,
     patientsTreated: 1200,
+    avilabilityFrom: "6:00 PM",
+    avilabilityTo: "9:40 PM",
+    timeInterval: 30,
     rating: 4.9,
     reviewCount: 426,
     consultationFee: 120,
@@ -119,8 +128,11 @@ export const doctors: Doctor[] = [
     bio: "Pediatric physician building warm, efficient care journeys for children and parents.",
     education: "MBBS, DCH (Boston Children's Hospital)",
     languages: ["English", "Arabic"],
+    avilabilityFrom: "6:00 PM",
+    avilabilityTo: "9:40 PM",
     yearsExperience: 12,
     patientsTreated: 980,
+    timeInterval: 30,
     rating: 4.8,
     reviewCount: 298,
     consultationFee: 95,
@@ -139,6 +151,9 @@ export const doctors: Doctor[] = [
     bio: "Dermatologist specializing in medical and aesthetic treatment pathways with clear follow-up planning.",
     education: "MBBS, MD Dermatology (Mayo Clinic)",
     languages: ["English", "German"],
+    avilabilityFrom: "6:00 PM",
+    avilabilityTo: "9:40 PM",
+    timeInterval: 30,
     yearsExperience: 10,
     patientsTreated: 850,
     rating: 5,
@@ -159,7 +174,10 @@ export const doctors: Doctor[] = [
     bio: "Neurologist with a focus on accessible, evidence-backed treatment journeys and diagnostics.",
     education: "MBBS, DM Neurology (Cleveland Clinic)",
     languages: ["English", "Spanish"],
+    avilabilityFrom: "6:00 PM",
+    avilabilityTo: "9:40 PM",
     yearsExperience: 13,
+    timeInterval: 30,
     patientsTreated: 1040,
     rating: 4.7,
     reviewCount: 187,
@@ -169,43 +187,6 @@ export const doctors: Doctor[] = [
     featured: true
   }
 ];
-
-export const doctorSlots: Slot[] = [
-  "6:00 PM",
-  "6:10 PM",
-  "6:20 PM",
-  "6:30 PM",
-  "6:40 PM",
-  "6:50 PM",
-  "7:00 PM",
-  "7:10 PM",
-  "7:20 PM",
-  "7:30 PM",
-  "7:40 PM",
-  "7:50 PM",
-  "8:00 PM",
-  "8:10 PM",
-  "8:20 PM",
-  "8:30 PM",
-  "8:40 PM",
-  "8:50 PM",
-  "9:00 PM",
-  "9:10 PM",
-  "9:20 PM",
-  "9:30 PM",
-  "9:40 PM"
-].map((label, index) => ({
-  id: `slot-${index + 1}`,
-  doctorSlug: "dr-robert-chen",
-  date: "2026-04-28",
-  label,
-  status:
-    label === "6:30 PM"
-      ? "selected"
-      : ["6:10 PM", "7:10 PM", "7:20 PM", "8:00 PM", "9:20 PM", "9:30 PM"].includes(label)
-        ? "booked"
-        : "available"
-}));
 
 export const patientAppointments = [
   {
